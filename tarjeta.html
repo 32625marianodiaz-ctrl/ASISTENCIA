@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión QR - Capilla Reina de la Paz</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #121214; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .instruccion { color: #a1a1aa; font-size: 15px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .card-container { width: 320px; height: 460px; perspective: 1000px; cursor: pointer; }
+        .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.6); border-radius: 20px; }
+        .card-inner.flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 1px solid #2d2d35; box-sizing: border-box; }
+        
+        /* DISEÑO DEL FRENTE */
+        .card-front { background-color: #1a1a1f; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .card-front img { width: 200px; height: 200px; margin-bottom: 25px; border-radius: 50%; object-fit: cover; border: 4px solid #00b39c; }
+        .btn-tocar { background-color: #00b39c; color: #121214; padding: 12px 28px; border-radius: 25px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(0,179,156,0.3); }
+
+        /* DISEÑO DE ATRÁS */
+        .card-back { background-color: #24242b; transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 35px 25px; text-align: center; }
+        .titulo-back { color: #00b39c; font-size: 22px; font-weight: bold; margin: 0; }
+        .texto-reflexion { font-size: 16px; line-height: 1.6; color: #e5e5e7; margin: auto 0; }
+        
+        /* REPRODUCTOR DE AUDIO */
+        .audio-box { background: #1a1a1f; padding: 12px; border-radius: 30px; display: flex; align-items: center; gap: 15px; width: 100%; box-sizing: border-box; border: 1px solid #3f3f46; }
+        .btn-audio { background: #00b39c; border: none; color: #121214; width: 40px; height: 40px; border-radius: 50%; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .audio-info { font-size: 13px; color: #a1a1aa; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="instruccion">👉 Tocá la imagen para descubrir el mensaje</div>
+
+    <div class="card-container" onclick="girarTarjeta()">
+        <div id="tarjeta" class="card-inner">
+            
+            <div class="card-face card-front">
+                <img src="foto.jpg" alt="Imagen del proyecto">  
+                
+                <h3 style="margin:0; font-size: 20px; color: #fff;">¿Qué es Pentecostés?</h3>
+                <p style="margin: 5px 0 20px 0; color:#a1a1aa; font-size:14px;">Misión Callejera</p>
+                <div class="btn-tocar">ESCUCHAR MENSAJE</div>
+            </div>
+            
+            <div class="card-face card-back">
+                <p class="titulo-back">💡 Reflexión para hoy</p>
+                
+                <p class="texto-reflexion">
+                    El miedo nos paraliza y nos encierra en nosotros mismos, pero hoy el Espíritu Santo llega como un viento fuerte a abrir las puertas de nuestro corazón. Nos regala fuerza para salir a la calle, perder la vergüenza y contagiar la alegría de Dios con los que más lo necesitan. ¡Dejate encender!
+                </p> 
+                
+                <div class="audio-box" onclick="event.stopPropagation();">
+                    <button class="btn-audio" id="playBtn" onclick="reproducirAudio()">▶</button>
+                    <div class="audio-info">
+                        <span style="color:#fff; font-weight:bold; display:block;">Mensaje de voz</span>
+                        <span>Hacé clic para escuchar</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <audio id="miAudio" src="audio.mp3"></audio>
+
+    <script>
+        function girarTarjeta() {
+            document.getElementById('tarjeta').classList.toggle('flipped');
+        }
+        function reproducirAudio() {
+            const audio = document.getElementById('miAudio');
+            const btn = document.getElementById('playBtn');
+            if (audio.paused) {
+                audio.play();
+                btn.innerText = "⏸";
+            } else {
+                audio.pause();
+                btn.innerText = "▶";
+            }
+        }
+    </script>
+</body>
+</html>
