@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Consulta de Asistencia - Catequesis</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #121214; color: #e5e5e7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; }
+        .card { background-color: #1a1a1f; padding: 25px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 100%; max-width: 480px; text-align: center; border: 1px solid #2d2d35; position: relative; }
+        h2 { color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+        label { display: block; text-align: left; margin-bottom: 8px; color: #a1a1aa; font-size: 14px; }
+        .search-container { position: relative; text-align: left; margin-bottom: 15px; }
+        input { width: 100%; padding: 14px; border: 1px solid #3f3f46; border-radius: 8px; background-color: #24242b; color: #fff; font-size: 16px; box-sizing: border-box; }
+        input:focus { border-color: #00b39c; outline: none; }
+        .sug-box { position: absolute; top: 100%; left: 0; right: 0; background-color: #24242b; border: 1px solid #3f3f46; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 99; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .sug-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #2d2d35; font-size: 14px; text-align: left; }
+        .sug-item:hover { background-color: #00b39c; color: #121212; font-weight: bold; }
+        .box-resultado { margin-top: 25px; padding: 15px; border-radius: 8px; background-color: #24242b; text-align: left; display: none; animation: fadeIn 0.3s ease; }
+        .nombre-alumno { font-size: 18px; color: #ffffff; font-weight: bold; border-bottom: 1px solid #3f3f46; padding-bottom: 8px; margin-bottom: 5px; text-transform: uppercase; }
+        .dni-alumno { font-size: 14px; color: #a1a1aa; margin-bottom: 15px; }
+        .grid-contadores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .item-con { padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; color: #000; font-size: 14px; }
+        .c-pres { background-color: #ffffff; color: #000; }
+        .c-faltas { background-color: #e5e5e7; color: #000; }
+        .c-sab { background-color: #cc0000; color: #fff; }
+        .c-dom { background-color: #ffff00; color: #000; }
+        .c-jsab { background-color: #aed8f2; color: #000; }
+        .c-jdom { background-color: #aed8f2; color: #000; }
+        .num { font-size: 20px; display: block; margin-top: 4px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class='card'>
+        <h2>Consulta de Asistencias</h2>
+        <label for='nomInput'>Escriba el número de DNI del estudiante:</label>
+        <div class='search-container'>
+            <input type='text' id='nomInput' placeholder='Ej: 45678912 o sin puntos...' oninput='filtrarPorDNI()' autocomplete='off' inputmode='numeric'>
+            <div id='sugBox' class='sug-box'></div>
+        </div>
+        <div id='resultadoBox' class='box-resultado'>
+            <div id='resNombre' class='nombre-alumno'></div>
+            <div id='resDni' class='dni-alumno'></div>
+            <div class='grid-contadores'>
+                <div class='item-con c-pres'>TOT. PRES <span class='num' id='resPres'></span></div>
+                <div class='item-con c-faltas'>FALTAS <span class='num' id='resFaltas'></span></div>
+                <div class='item-con c-sab'>TOT. SÁB <span class='num' id='resSab'></span></div>
+                <div class='item-con c-dom'>TOT. DOM <span class='num' id='resDom'></span></div>
+                <div class='item-con c-jsab'>TOT. J SÁB <span class='num' id='resJSab'></span></div>
+                <div class='item-con c-jdom'>TOT. J DOM <span class='num' id='resJDom'></span></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const database = [{"dni":"55060634","alumno":"QUISPE, MARTINA ISABELLA","presencias":"3","faltas":"7","totSab":"3","totDom":"2","jSab":"1","jDom":"1"},{"dni":"54755575","alumno":"FERNÁNDEZ TOLEDO, JOAQUIN BASTIAN","presencias":"7","faltas":"3","totSab":"1","totDom":"1","jSab":"0","jDom":"1"},{"dni":"54754886","alumno":"RODRIGUEZ, TIZIANO LEÓN","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"55063103","alumno":"VERON AGOSTINI, MARIA JOSE","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"55060698","alumno":"VÁZQUEZ, SANTINO VALENTÍN","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"55060851","alumno":"LEAÑEZ, ANA VICTORIA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54480558","alumno":"CASTAÑO, ORIANA SOFIA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54752517","alumno":"FLORES, SIMON ALEJANDRO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53276883","alumno":"MAURIN, MÁXIMO GAEL","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54178658","alumno":"PICCOLI SEVILLA, YANIRIS MARIA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54153801","alumno":"PIÑAR, MAITE NICOLE","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54752521","alumno":"SULCA, MERCEDES SOFIA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54151977","alumno":"LORCA, LOANA ROCIO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54480761","alumno":"KLAUK, GONZALO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54580408","alumno":"ORTIZ, ANGELINA MELANI","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54151958","alumno":"LLUSCO, MAXIMO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54151959","alumno":"LLUSCO, AUGUSTO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54325513","alumno":"ROJAS, LIONEL","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53278541","alumno":"FERNÁNDEZ TOLEDO, BRENDA MAGALI","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53278842","alumno":"APARICIO, THIAGO DAVID HERNAN","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53860782","alumno":"ENCINAS ANCE, JOSEFINA ISABEL","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53276997","alumno":"D'AMORE, BIANCA SOFÍA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53422566","alumno":"LÓPEZ, GUADALUPE BIANCA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53420081","alumno":"MENDOZA, DANA ABRIL","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"51610530","alumno":"FLORES, AMIRA GUADALUPE","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"52279342","alumno":"MAMANÍ, RAMIRO EMANUEL","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"54048842","alumno":"SIAREZ, ANDREA CAROLINA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53861043","alumno":"HUANCO, VALENTINA CRISTAL","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"52272411","alumno":"OROPEZA CORTEZ, THIAGO ADRIAN","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"52506867","alumno":"SALGUERO, JUAN MARTIN","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"50574721","alumno":"APARICIO, GUSTAVO IGNACIO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53124846","alumno":"CUENCA, VALENTINA JIMENA","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"52279805","alumno":"ENCINAS ANCE, FRANCISCO IGNACIO","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53124712","alumno":"QUIROGA, AITANA BERENICE","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"},{"dni":"53125060","alumno":"ARGUELLO, VALENTINA LUJAN","presencias":"0","faltas":"0","totSab":"0","totDom":"0","jSab":"0","jDom":"0"}];
+        const input = document.getElementById('nomInput');
+        const sugBox = document.getElementById('sugBox');
+        const rBox = document.getElementById('resultadoBox');
+        function filtrarPorDNI() {
+            const texto = input.value.trim().replace(/\./g, '');
+            sugBox.innerHTML = '';
+            if (texto.length < 3) { sugBox.style.display = 'none'; rBox.style.display = 'none'; return; }
+            const filtrados = database.filter(item => item.dni.replace(/\./g, '').includes(texto));
+            if (filtrados.length === 0) { sugBox.style.display = 'none'; return; }
+            filtrados.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'sug-item';
+                div.innerHTML = `<strong>${item.dni}</strong> - ${item.alumno.toUpperCase()}`;
+                div.onclick = () => seleccionarAlumno(item);
+                sugBox.appendChild(div);
+            });
+            sugBox.style.display = 'block';
+        }
+        function seleccionarAlumno(registro) {
+            input.value = registro.dni;
+            sugBox.style.display = 'none';
+            document.getElementById('resNombre').innerText = registro.alumno;
+            document.getElementById('resDni').innerText = 'DNI: ' + registro.dni;
+            document.getElementById('resPres').innerText = registro.presencias || '0';
+            document.getElementById('resFaltas').innerText = registro.faltas || '0';
+            document.getElementById('resSab').innerText = registro.totSab || '0';
+            document.getElementById('resDom').innerText = registro.totDom || '0';
+            document.getElementById('resJSab').innerText = registro.jSab || '0';
+            document.getElementById('resJDom').innerText = registro.jDom || '0';
+            rBox.style.display = 'block';
+        }
+        document.addEventListener('click', (e) => { if (e.target !== input) sugBox.style.display = 'none'; });
+    </script>
+</body>
+</html>
